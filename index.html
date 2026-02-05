@@ -1,252 +1,645 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ImanPlay</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ImanPlay — Prayer reminders</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Amiri&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri&family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
 
 <style>
+:root{
+  --bg-1: #071226;
+  --bg-2: #09233b;
+  --card: linear-gradient(135deg,#0f2a4f 0%, #0b1f3a 100%);
+  --accent: #00ffcc;
+  --muted: rgba(255,255,255,0.75);
+  --glass: rgba(255,255,255,0.03);
+}
 
 *{box-sizing:border-box}
-
+html,body{height:100%}
 body{
-margin:0;
-font-family:Poppins;
-background:#081629;
-color:white;
-overflow-x:hidden;
+  margin:0;
+  font-family:"Poppins",system-ui,-apple-system,"Segoe UI",Roboto;
+  background: radial-gradient(1200px 800px at 10% 10%, rgba(0,255,204,0.04), transparent 10%),
+              linear-gradient(180deg,var(--bg-1) 0%, var(--bg-2) 100%);
+  color:#fff;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+  padding-bottom:40px;
 }
 
+/* Header */
 header{
-text-align:center;
-padding:25px;
-font-size:30px;
-font-family:Amiri;
-background:#0c2a55;
+  text-align:center;
+  padding:28px 16px;
+  font-family:Amiri,serif;
+  font-size:32px;
+  letter-spacing:0.6px;
+  background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);
+  border-bottom:1px solid rgba(255,255,255,0.03);
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:center;
+  position:sticky;
+  top:0;
+  z-index:20;
 }
 
+/* Top bar controls */
+.controls{
+  margin-left:12px;
+  display:flex;
+  gap:8px;
+}
+.btn{
+  background:var(--glass);
+  color:var(--muted);
+  border:1px solid rgba(255,255,255,0.04);
+  padding:8px 12px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  transition:all .18s ease;
+  font-size:14px;
+}
+.btn:hover{transform:translateY(-3px); box-shadow:0 6px 18px rgba(0,0,0,0.4)}
+.btn.primary{
+  background:linear-gradient(90deg,#075a87,#0ea387);
+  color:#021217;
+  border:0;
+}
+
+/* Layout */
+.container{
+  max-width:980px;
+  margin:28px auto;
+  display:grid;
+  grid-template-columns:1fr 360px;
+  gap:20px;
+  padding:0 16px;
+}
+
+/* Main panel */
 .panel{
-max-width:420px;
-margin:40px auto;
-background:#0f2140;
-padding:25px;
-border-radius:20px;
-box-shadow:0 0 30px rgba(0,0,0,.6);
+  background:var(--card);
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 10px 40px rgba(2,10,20,0.6);
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.03);
 }
 
+.times{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:6px;
+}
 .row{
-display:flex;
-justify-content:space-between;
-padding:10px 0;
-font-size:18px;
-border-bottom:1px solid #1c3a70;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px;
+  border-radius:12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+  transition:transform .2s ease, box-shadow .2s ease;
+  border:1px solid rgba(255,255,255,0.02);
+}
+.row:hover{transform:translateY(-4px); box-shadow:0 10px 30px rgba(2,6,12,0.5)}
+.row .label{display:flex;gap:10px;align-items:center;font-weight:600}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(0,255,204,0.15)}
+
+/* Side column */
+.side{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
 }
 
-/* SIDE NOTIFICATION ANIMATION */
+/* Cards in side */
+.card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  padding:12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.03);
+}
+.small{font-size:13px;color:var(--muted)}
+.big{font-size:18px;font-weight:700;color:white}
 
-@keyframes slideSide{
-from{right:-350px}
-to{right:20px}
+/* Hadith & Dua */
+.quote{
+  font-style:italic;
+  line-height:1.45;
+  color:#e6f7f2;
 }
 
-.sideNotify{
-position:fixed;
-top:30px;
-right:-350px;
-width:300px;
-background:#133b78;
-padding:20px;
-border-radius:15px;
-box-shadow:0 0 25px black;
-animation:slideSide 1s forwards;
-z-index:999;
-}
+/* Hijri/Gregorian */
+.dateRow{display:flex;justify-content:space-between;align-items:center;gap:12px}
 
-/* FULL SCREEN BLOCK */
-
+/* Overlay full-screen lock */
 #overlay{
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background:#081629;
-display:none;
-align-items:center;
-justify-content:center;
-flex-direction:column;
-z-index:9999;
-animation:zoomIn .7s ease;
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  background:linear-gradient(180deg, rgba(2,6,12,0.85), rgba(1,8,18,0.95));
+  backdrop-filter: blur(6px);
+  color:#fff;
+  flex-direction:column;
+  padding:24px;
 }
-
-@keyframes zoomIn{
-from{transform:scale(.7);opacity:0}
-to{transform:scale(1);opacity:1}
+#overlay .panel{
+  max-width:680px;
+  text-align:center;
+  padding:28px;
 }
+#overlay h1{font-family:Amiri;font-size:58px;margin:0 0 6px}
+#overlay p{margin:0 0 12px;font-size:18px;opacity:.95}
+#countdown{font-size:48px;color:var(--accent);margin-top:12px}
 
-#overlay h1{
-font-family:Amiri;
-font-size:60px;
-margin:0;
+/* Side in-page notification (fallback and in addition to system notify) */
+#sideTray{position:fixed;top:26px;right:20px;display:flex;flex-direction:column;gap:10px;z-index:9998;pointer-events:none}
+.sideNotify{
+  pointer-events:auto;
+  width:320px;
+  padding:12px 12px;
+  border-radius:12px;
+  background:linear-gradient(90deg,#083b66 0%, #0e2a5b 100%);
+  box-shadow:0 18px 40px rgba(3,9,22,0.6);
+  color:#fff;
+  transform:translateX(120%);
+  opacity:0;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  border:1px solid rgba(255,255,255,0.04);
+  animation:slideSide .6s cubic-bezier(.2,.9,.2,1) forwards;
 }
+.sideNotify img{width:44px;height:44px;border-radius:8px;flex-shrink:0}
+.sideNotify .text{flex:1}
+.sideNotify b{display:block;font-weight:700}
+@keyframes slideSide{to{transform:translateX(0);opacity:1} from{transform:translateX(120%);opacity:0}}
 
-#overlay p{
-font-size:20px;
-opacity:.8;
+/* subtle transitions */
+.fadeIn{animation:fadeIn .4s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none}}
+
+/* locked pointer-events helper */
+.lock{pointer-events:none;user-select:none}
+
+/* responsive */
+@media (max-width:900px){
+  .container{grid-template-columns:1fr; padding-bottom:80px}
+  .side{order:2}
 }
-
-#countdown{
-font-size:45px;
-margin-top:25px;
-color:#00ffcc;
-}
-
-/* Prevent interaction */
-.lock{
-pointer-events:none;
-}
-
 </style>
 </head>
-
 <body>
 
-<header>ImanPlay</header>
+<header>
+  ImanPlay
+  <div class="controls">
+    <button id="enableBtn" class="btn">Enable notifications & sound</button>
+    <button id="testBtn" class="btn">Test alert</button>
+  </div>
+</header>
 
-<div class="panel">
+<main class="container">
 
-<div class="row"><span>Fajr</span><span id="fajr">--</span></div>
-<div class="row"><span>Dhuhr</span><span id="dhuhr">--</span></div>
-<div class="row"><span>Asr</span><span id="asr">--</span></div>
-<div class="row"><span>Maghrib</span><span id="maghrib">--</span></div>
-<div class="row"><span>Isha</span><span id="isha">--</span></div>
+  <section class="panel" aria-labelledby="prayerTimesLabel">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div id="prayerTimesLabel" style="font-size:18px;font-weight:700">Today's Prayer Times</div>
+        <div class="small" id="gregDate"></div>
+      </div>
+      <div class="small" id="hijriDate"></div>
+    </div>
 
+    <div class="times" id="timesList" style="margin-top:12px">
+      <div class="row fadeIn"><div class="label"><span class="dot"></span><span>Fajr</span></div><div id="fajr">--:--</div></div>
+      <div class="row fadeIn" style="animation-delay:.03s"><div class="label"><span class="dot"></span><span>Dhuhr</span></div><div id="dhuhr">--:--</div></div>
+      <div class="row fadeIn" style="animation-delay:.06s"><div class="label"><span class="dot"></span><span>Asr</span></div><div id="asr">--:--</div></div>
+      <div class="row fadeIn" style="animation-delay:.09s"><div class="label"><span class="dot"></span><span>Maghrib</span></div><div id="maghrib">--:--</div></div>
+      <div class="row fadeIn" style="animation-delay:.12s"><div class="label"><span class="dot"></span><span>Isha</span></div><div id="isha">--:--</div></div>
+    </div>
+
+    <div style="margin-top:14px; display:flex; gap:12px; align-items:center; justify-content:space-between">
+      <div class="small">Next prayer: <span id="nextPrayer" style="font-weight:700">—</span></div>
+      <div class="small">Time until next: <span id="timeUntil" style="font-weight:700">—</span></div>
+    </div>
+  </section>
+
+  <aside class="side">
+    <div class="card">
+      <div class="big">Hadith of the day</div>
+      <p id="hadith" class="quote small" style="margin-top:8px">Loading…</p>
+    </div>
+
+    <div class="card">
+      <div class="big">Dua of the day</div>
+      <p id="dua" class="quote small" style="margin-top:8px">Loading…</p>
+    </div>
+
+    <div class="card">
+      <div class="big">Quick actions</div>
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <button id="muteBtn" class="btn">Mute sound</button>
+        <button id="unlockNowBtn" class="btn">End lock early</button>
+      </div>
+      <div style="margin-top:8px" class="small">Tip: Allow notifications and click "Test alert" once to grant sound permission.</div>
+    </div>
+
+  </aside>
+
+</main>
+
+<!-- overlay lock -->
+<div id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="panel">
+    <h1>🕌 Time To Pray</h1>
+    <p>Focus & worship — screen blocked for the prayer duration</p>
+    <div id="countdown">07:00</div>
+    <div style="margin-top:12px">
+      <button id="stopLockBtn" class="btn">End early (confirm)</button>
+    </div>
+  </div>
 </div>
 
-<div id="overlay">
-<h1>🕌 Time To Pray</h1>
-<p>Screen locked for worship</p>
-<div id="countdown"></div>
-</div>
+<!-- side tray for in-page notifications (fallback) -->
+<div id="sideTray" aria-hidden="true"></div>
 
-<audio id="sound" src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg"></audio>
+<!-- audio -->
+<audio id="sound" preload="auto" src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg"></audio>
 
 <script>
+/*
+  Improvements:
+  - Better UI and transitions.
+  - System notification + in-page side notification fallback.
+  - "Enable" button to request permission and allow audio playback (user gesture).
+  - Hadith & Dua rotate deterministically by day-of-year (no external API required).
+  - Hijri date from aladhan response; fallback to Intl.DateTimeFormat if needed.
+  - Next prayer indicator + time until it.
+  - Lock overlay (7 minutes) with ability to end early (with confirmation).
+  - All features work when served over HTTPS or localhost (required for geolocation & notifications).
+*/
 
-const overlay=document.getElementById("overlay");
-const sound=document.getElementById("sound");
-let locked=false;
+const sound = document.getElementById('sound');
+const enableBtn = document.getElementById('enableBtn');
+const testBtn = document.getElementById('testBtn');
+const muteBtn = document.getElementById('muteBtn');
 
-/* BLOCK CLOSE */
-window.addEventListener("beforeunload",e=>{
-if(locked){
-e.preventDefault();
-e.returnValue="";
+let soundAllowed = false;
+let notificationsAllowed = (Notification && Notification.permission === 'granted');
+let locked = false;
+const sideTray = document.getElementById('sideTray');
+const overlay = document.getElementById('overlay');
+const stopLockBtn = document.getElementById('stopLockBtn');
+
+const hijriDateEl = document.getElementById('hijriDate');
+const gregDateEl = document.getElementById('gregDate');
+const nextPrayerEl = document.getElementById('nextPrayer');
+const timeUntilEl = document.getElementById('timeUntil');
+
+const hadithEl = document.getElementById('hadith');
+const duaEl = document.getElementById('dua');
+
+const timesEls = {
+  Fajr: document.getElementById('fajr'),
+  Dhuhr: document.getElementById('dhuhr'),
+  Asr: document.getElementById('asr'),
+  Maghrib: document.getElementById('maghrib'),
+  Isha: document.getElementById('isha')
+};
+
+// Small curated lists for Hadith of the day and Dua of the day.
+// We'll pick deterministically based on the day-of-year so it changes daily without external calls.
+const hadiths = [
+  "Actions are judged by intentions. — Prophet Muhammad (peace be upon him).",
+  "Whoever believes in Allah and the Last Day, let him speak good or remain silent. — Prophet Muhammad (peace be upon him).",
+  "None of you truly believes until he loves for his brother what he loves for himself. — Prophet Muhammad (peace be upon him).",
+  "The best among you are those who have the best manners and character. — Prophet Muhammad (peace be upon him).",
+  "The strong man is not the one who can overpower others; the strong man is the one who controls himself. — Prophet Muhammad (peace be upon him)."
+];
+
+const duas = [
+  "O Allah, guide me among those You have guided, and grant me health among those You have granted health. (Short morning dua)",
+  "Our Lord, give us in this world that which is good and in the Hereafter that which is good. — (Qur'an 2:201)",
+  "O Turner of the hearts, keep my heart firm upon Your religion.",
+  "Rabbi inni lima anzalta ilayya min khayrin faqeer — My Lord, truly I am in need of whatever good You bestow on me.",
+  "O Allah, make me of those who repent and make me of those who are purified."
+];
+
+function dayIndex(arr){
+  const now = new Date();
+  const start = new Date(now.getFullYear(),0,0);
+  const diff = now - start;
+  const oneDay = 1000*60*60*24;
+  const dayOfYear = Math.floor(diff/oneDay);
+  return dayOfYear % arr.length;
 }
+
+function showHadithAndDua(){
+  hadithEl.textContent = hadiths[dayIndex(hadiths)];
+  duaEl.textContent = duas[dayIndex(duas)];
+}
+showHadithAndDua();
+
+// system permissions
+enableBtn.addEventListener('click', async ()=>{
+  // request notifications
+  if('Notification' in window){
+    try{
+      const p = await Notification.requestPermission();
+      notificationsAllowed = (p === 'granted');
+    }catch(e){
+      // ignore
+    }
+  }
+
+  // play a short sound to unlock audio on some browsers
+  try{
+    await sound.play();
+    sound.pause();
+    sound.currentTime = 0;
+    soundAllowed = true;
+  }catch(e){
+    // user gesture occurred, but still may fail if autoplay blocked
+    soundAllowed = true; // after button click we assume allowed
+  }
+
+  enableBtn.textContent = "Enabled";
+  enableBtn.classList.add('primary');
+  flashSide("Notifications enabled", "You will get reminders");
 });
 
-/* GEO */
-
-navigator.geolocation.getCurrentPosition(pos=>{
-loadTimes(pos.coords.latitude,pos.coords.longitude);
-},()=>loadTimes(43.4675,-79.6877));
-
-function loadTimes(lat,lon){
-
-fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`)
-.then(r=>r.json())
-.then(d=>{
-
-const t=d.data.timings;
-
-fajr.innerHTML=t.Fajr;
-dhuhr.innerHTML=t.Dhuhr;
-asr.innerHTML=t.Asr;
-maghrib.innerHTML=t.Maghrib;
-isha.innerHTML=t.Isha;
-
-schedule(t);
-
+// test alert
+testBtn.addEventListener('click', ()=>{
+  flashSide("Test alert", "This is a sample reminder");
+  if(notificationsAllowed) new Notification("ImanPlay — Test", {body:"This is a sample reminder", icon:"https://cdn-icons-png.flaticon.com/512/616/616408.png"});
+  playSound();
 });
+
+// mute
+muteBtn.addEventListener('click', ()=>{
+  sound.muted = !sound.muted;
+  muteBtn.textContent = sound.muted ? "Unmute sound" : "Mute sound";
+});
+
+// stop lock early with confirmation
+stopLockBtn.addEventListener('click', ()=>{
+  if(!locked) return;
+  if(confirm("Are you sure you want to end the prayer lock early?")){
+    endLock();
+    flashSide("Lock ended", "You chose to end the overlay early");
+  }
+});
+
+// helper: show in-page side notification
+function flashSide(title, text){
+  const div = document.createElement('div');
+  div.className = 'sideNotify';
+  div.innerHTML = `<img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="">
+                   <div class="text"><b>${title}</b><div style="font-size:13px;opacity:.92">${text}</div></div>`;
+  sideTray.appendChild(div);
+  // auto remove after 12s
+  setTimeout(()=>{ div.style.transition='opacity .4s'; div.style.opacity='0'; setTimeout(()=>div.remove(),400); }, 12000);
+  // allow click to dismiss
+  div.addEventListener('click', ()=>div.remove());
 }
 
-/* NOTIFICATION PERMISSION */
-if(Notification.permission!=="granted") Notification.requestPermission();
-
-/* SIDE POP */
-
-function side(msg){
-
-if(Notification.permission==="granted"){
-new Notification(msg,{body:"Get ready for salah",icon:"https://cdn-icons-png.flaticon.com/512/616/616408.png"});
+// play sound safely
+async function playSound(){
+  if(sound.muted) return;
+  try{
+    sound.currentTime = 0;
+    await sound.play();
+  }catch(e){
+    // ignore play errors (usually due to autoplay policies)
+    // the user should press enable/test to allow sound.
+  }
 }
 
-const div=document.createElement("div");
-div.className="sideNotify";
-div.innerHTML=`<b>${msg}</b><br>5 minutes left`;
-document.body.appendChild(div);
+// Lock overlay handling
+let lockTimer = null;
+function startLock(durationSeconds = 420){ // default 7 minutes
+  if(locked) return;
+  locked = true;
+  overlay.style.display = 'flex';
+  overlay.setAttribute('aria-hidden','false');
+  document.body.classList.add('lock');
+  playSound();
 
-sound.play();
+  let seconds = durationSeconds;
+  const cdEl = document.getElementById('countdown');
+  cdEl.textContent = formatTime(seconds);
 
-setTimeout(()=>div.remove(),15000);
+  lockTimer = setInterval(()=>{
+    seconds--;
+    if(seconds >= 0) cdEl.textContent = formatTime(seconds);
+    if(seconds < 0){
+      clearInterval(lockTimer);
+      endLock();
+    }
+  }, 1000);
 }
 
-/* FULL BLOCK */
-
-function block(){
-
-locked=true;
-overlay.style.display="flex";
-document.body.classList.add("lock");
-
-sound.play();
-
-let seconds=420;
-
-const timer=setInterval(()=>{
-
-let m=Math.floor(seconds/60);
-let s=seconds%60;
-
-countdown.innerHTML=`${m}:${s.toString().padStart(2,"0")}`;
-
-seconds--;
-
-if(seconds<0){
-clearInterval(timer);
-overlay.style.display="none";
-document.body.classList.remove("lock");
-locked=false;
+function endLock(){
+  locked = false;
+  overlay.style.display = 'none';
+  overlay.setAttribute('aria-hidden','true');
+  document.body.classList.remove('lock');
+  if(lockTimer) { clearInterval(lockTimer); lockTimer = null; }
 }
 
-},1000);
-
+// time helpers
+function pad(n){ return n.toString().padStart(2,'0'); }
+function formatTime(sec){
+  const m = Math.floor(sec/60);
+  const s = sec%60;
+  return `${pad(m)}:${pad(s)}`;
 }
 
-/* SCHEDULER */
+// SCHEDULER & API fetch (Aladhan)
+let todaysTimings = null;
 
+function loadTimes(lat, lon){
+  fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`)
+    .then(r => r.json())
+    .then(d => {
+      if(!d || !d.data) throw new Error("No timing data");
+      const t = d.data.timings;
+      const dateInfo = d.data.date;
+      // Fill UI
+      ['Fajr','Dhuhr','Asr','Maghrib','Isha'].forEach(p => {
+        if(timesEls[p]) timesEls[p].textContent = t[p];
+      });
+      todaysTimings = t;
+
+      // Hijri Display: prefer API hijri, fallback to Intl
+      if(dateInfo && dateInfo.hijri){
+        hijriDateEl.textContent = `${dateInfo.hijri.day} ${dateInfo.hijri.month.en} ${dateInfo.hijri.year} AH`;
+      }else{
+        try{
+          const dt = new Date();
+          const f = new Intl.DateTimeFormat('en-u-ca-islamic', {day:'numeric', month:'long', year:'numeric'});
+          hijriDateEl.textContent = f.format(dt);
+        }catch(e){
+          hijriDateEl.textContent = '';
+        }
+      }
+
+      // Gregorian date display
+      const now = new Date();
+      const gFmt = now.toLocaleString(undefined, {weekday:'long', month:'long', day:'numeric'});
+      gregDateEl.textContent = gFmt;
+
+      schedule(t);
+      updateNextPrayer();
+      // refresh next prayer countdown every 15 seconds
+      setInterval(updateNextPrayer, 15_000);
+    })
+    .catch(err=>{
+      console.warn("Failed to fetch timings, using defaults", err);
+      // fallback approximate defaults
+      const fallback = {Fajr:"05:00",Dhuhr:"12:30",Asr:"15:30",Maghrib:"18:00",Isha:"19:30"};
+      ['Fajr','Dhuhr','Asr','Maghrib','Isha'].forEach(p => timesEls[p].textContent = fallback[p]);
+      todaysTimings = fallback;
+      schedule(fallback);
+    });
+}
+
+// schedule side popups and lock overlay for each prayer
 function schedule(times){
+  // Clear previously scheduled (naive: no tracking). For repeated page visits, it's acceptable.
+  const prayerNames = ["Fajr","Dhuhr","Asr","Maghrib","Isha"];
+  const now = new Date();
 
-["Fajr","Dhuhr","Asr","Maghrib","Isha"].forEach(p=>{
+  prayerNames.forEach(name => {
+    const val = times[name];
+    if(!val) return;
+    const [hStr, mStr] = val.split(':');
+    let h = parseInt(hStr,10), m = parseInt(mStr,10);
+    if(isNaN(h) || isNaN(m)) return;
 
-const [h,m]=times[p].split(":");
-const now=new Date();
-const pray=new Date();
+    const pray = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0);
 
-pray.setHours(h,m,0,0);
+    // If prayer already passed for today, skip scheduling (timings may change daily)
+    if(pray <= now) return;
 
-const sideTime=new Date(pray.getTime()-300000);
+    // side notification 5 minutes before
+    const sideTime = new Date(pray.getTime() - 5*60*1000);
+    const sDelay = sideTime - now;
+    const bDelay = pray - now;
 
-const sDelay=sideTime-now;
-const bDelay=pray-now;
+    if(sDelay > 0) setTimeout(()=> {
+      const msg = `${name} in 5 minutes`;
+      flashSide(msg, "Get ready for Salah");
+      if(notificationsAllowed) new Notification("ImanPlay", {body: `${name} in 5 minutes`, icon:"https://cdn-icons-png.flaticon.com/512/616/616408.png"});
+      playSound();
+    }, sDelay);
 
-if(sDelay>0) setTimeout(()=>side(p+" in 5 minutes"),sDelay);
-if(bDelay>0) setTimeout(block,bDelay);
-
-});
+    // At prayer time: full-block overlay + notification
+    if(bDelay > 0) setTimeout(()=> {
+      const msg = `${name} time`;
+      if(notificationsAllowed) new Notification("ImanPlay — Prayer time", {body: `${name} time — Focus now`, icon:"https://cdn-icons-png.flaticon.com/512/616/616408.png"});
+      flashSide(msg, `${name} has started`);
+      startLock(7*60); // 7 minutes block
+    }, bDelay);
+  });
 }
+
+// next prayer indicator
+function updateNextPrayer(){
+  if(!todaysTimings) return;
+  const now = new Date();
+  const prayerNames = ["Fajr","Dhuhr","Asr","Maghrib","Isha"];
+  let next = null;
+  let nextTime = null;
+  for(const name of prayerNames){
+    const [hStr,mStr] = (todaysTimings[name]||'00:00').split(':');
+    const pray = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(hStr,10), parseInt(mStr,10), 0, 0);
+    if(pray > now){
+      next = name;
+      nextTime = pray;
+      break;
+    }
+  }
+  if(!next){
+    // no more prayers today — set to Fajr tomorrow (approx)
+    next = 'Fajr';
+    const [hStr,mStr] = (todaysTimings['Fajr']||'05:00').split(':');
+    nextTime = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, parseInt(hStr,10), parseInt(mStr,10), 0, 0);
+  }
+  nextPrayerEl.textContent = `${next} (${formatClock(nextTime)})`;
+  const diff = Math.max(0, Math.floor((nextTime - now) / 1000));
+  timeUntilEl.textContent = humanRemaining(diff);
+}
+
+function formatClock(d){
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function humanRemaining(seconds){
+  const h = Math.floor(seconds/3600);
+  const m = Math.floor((seconds%3600)/60);
+  const s = seconds%60;
+  if(h>0) return `${h}h ${m}m`;
+  if(m>0) return `${m}m ${s}s`;
+  return `${s}s`;
+}
+
+// attempt geolocation then load times
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(pos=>{
+    loadTimes(pos.coords.latitude, pos.coords.longitude);
+  }, err=>{
+    // fallback to a default location (Toronto)
+    loadTimes(43.4675, -79.6877);
+  }, {timeout:7000});
+} else {
+  loadTimes(43.4675, -79.6877);
+}
+
+// prevent closing while locked (optional)
+window.addEventListener("beforeunload", (e) => {
+  if(locked){
+    e.preventDefault();
+    e.returnValue = "";
+  }
+});
+
+// small helper to format date on load
+(function showDatesNow(){
+  const now = new Date();
+  gregDateEl.textContent = now.toLocaleString(undefined, {weekday:'short', month:'short', day:'numeric'});
+})();
+
+// play sound after test or enable
+function playTestSound(){
+  playSound();
+}
+
+// wire test button to make audible play allowed
+testBtn.addEventListener('click', playTestSound);
+
+// small accessibility: pressing Escape does not close lock automatically; require explicit confirmation
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='Escape' && locked){
+    // do nothing to keep lock; could show hint
+    flashSide("Locked", "Use 'End lock early' button to end overlay");
+    e.preventDefault();
+  }
+});
+
+// initialize: show hadith/dua loaded
+showHadithAndDua();
 
 </script>
 

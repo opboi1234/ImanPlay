@@ -6,75 +6,61 @@
 <title>ImanPlay - Prayer Reminder</title>
 <link href="https://fonts.googleapis.com/css2?family=Amiri&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  body {
-    font-family: 'Roboto', sans-serif;
-    background: linear-gradient(to bottom, #f0f8ff, #d6eaf8);
-    margin: 0;
-    padding: 0;
-    text-align: center;
-    color: #333;
-  }
-  header {
-    padding: 20px;
-    background-color: #0b3d91;
-    color: white;
-    font-family: 'Amiri', serif;
-    font-size: 2rem;
-  }
-  main {
-    padding: 30px;
-  }
-  .prayer-times {
-    margin: 20px auto;
-    max-width: 400px;
-    background-color: #ffffffcc;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
-  }
-  .prayer-times h2 {
-    margin-top: 0;
-    font-family: 'Amiri', serif;
-    color: #0b3d91;
-  }
-  .prayer-time {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    font-size: 1.2rem;
-  }
-  button {
-    background-color: #0b3d91;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-top: 20px;
-    transition: 0.3s;
-  }
-  button:hover {
-    background-color: #0654b3;
-  }
-  #overlay {
-    display: none; /* hidden by default */
-    position: fixed;
-    top:0; left:0; right:0; bottom:0;
-    background-color: rgba(11,61,145,0.95);
-    z-index: 9999;
-    color: white;
-    font-size: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    pointer-events: all;
-  }
-  #overlay p {
-    font-family: 'Amiri', serif;
-    margin-bottom: 20px;
-  }
+body {
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(to bottom, #f0f8ff, #d6eaf8);
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  color: #333;
+}
+header {
+  padding: 20px;
+  background-color: #0b3d91;
+  color: white;
+  font-family: 'Amiri', serif;
+  font-size: 2rem;
+}
+main {
+  padding: 30px;
+}
+.prayer-times {
+  margin: 20px auto;
+  max-width: 400px;
+  background-color: #ffffffcc;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+.prayer-times h2 {
+  margin-top: 0;
+  font-family: 'Amiri', serif;
+  color: #0b3d91;
+}
+.prayer-time {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 1.2rem;
+}
+#overlay {
+  display: none; /* hidden by default */
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  background-color: rgba(11,61,145,0.95);
+  z-index: 9999;
+  color: white;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  pointer-events: all;
+}
+#overlay p {
+  font-family: 'Amiri', serif;
+  margin-bottom: 20px;
+}
 </style>
 </head>
 <body>
@@ -90,8 +76,6 @@
     <div class="prayer-time"><span>Maghrib</span><span id="maghrib">--:--</span></div>
     <div class="prayer-time"><span>Isha</span><span id="isha">--:--</span></div>
   </div>
-
-  <button id="sampleNotification">Show Sample Side Notification 🔔</button>
 </main>
 
 <div id="overlay">
@@ -105,7 +89,7 @@
 const praySound = document.getElementById('praySound');
 const overlay = document.getElementById('overlay');
 
-// Warn user if they try to close tab during overlay
+// Warn if trying to close tab during overlay
 window.addEventListener("beforeunload", function (e) {
   if (overlay.style.display === "flex") {
     e.preventDefault();
@@ -113,100 +97,78 @@ window.addEventListener("beforeunload", function (e) {
   }
 });
 
-// Request notification permission
+// Request notifications
 if (Notification.permission !== "granted") {
   Notification.requestPermission();
 }
 
-// Show a small side notification
+// Side notification function
 function showSideNotification(title, body) {
   if (Notification.permission === "granted") {
-    const notification = new Notification(title, { 
-      body: body, 
+    new Notification(title, {
+      body: body,
       icon: "https://cdn-icons-png.flaticon.com/512/616/616408.png"
     });
     praySound.play();
   }
 }
 
-// Show full-screen overlay for 7 minutes
+// Overlay function
 function startOverlay() {
   overlay.style.display = "flex";
   praySound.play();
   document.body.style.pointerEvents = "none";
   overlay.style.pointerEvents = "all";
-
   setTimeout(() => {
     overlay.style.display = "none";
     document.body.style.pointerEvents = "auto";
-  }, 7 * 60 * 1000); // 7 minutes
-}
-
-// Sample side notification button
-document.getElementById('sampleNotification').addEventListener('click', () => {
-  showSideNotification("Dhuhr in 5 minutes", "Click this small notification to trigger overlay");
-});
-
-// Fetch prayer times from Aladhan API
-function fetchPrayerTimes(lat, lon) {
-  fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=4`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.code === 200) {
-        const timings = data.data.timings;
-        document.getElementById('fajr').textContent = timings.Fajr;
-        document.getElementById('dhuhr').textContent = timings.Dhuhr;
-        document.getElementById('asr').textContent = timings.Asr;
-        document.getElementById('maghrib').textContent = timings.Maghrib;
-        document.getElementById('isha').textContent = timings.Isha;
-
-        scheduleNotifications(timings);
-      }
-    })
-    .catch(err => console.error(err));
+  }, 7*60*1000); // 7 minutes
 }
 
 // Schedule notifications
 function scheduleNotifications(timings) {
-  const prayerOrder = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
+  const prayers = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
   const now = new Date();
 
-  prayerOrder.forEach(prayer => {
+  prayers.forEach(prayer => {
     const [hour, minute] = timings[prayer].split(':');
     const prayerTime = new Date();
-    prayerTime.setHours(parseInt(hour), parseInt(minute),0,0);
+    prayerTime.setHours(parseInt(hour), parseInt(minute), 0, 0);
 
-    const sideNotificationTime = new Date(prayerTime.getTime() - 5*60*1000); // 5 mins before
+    const sideTime = new Date(prayerTime.getTime() - 5*60*1000); // 5 mins before
 
-    // Side notification
-    let sideTimeout = sideNotificationTime - now;
-    if (sideTimeout > 0) {
-      setTimeout(() => {
-        showSideNotification(`${prayer} in 5 minutes`, "Get ready to pray!");
-      }, sideTimeout);
-    }
-
-    // Full overlay
+    let sideTimeout = sideTime - now;
     let overlayTimeout = prayerTime - now;
-    if (overlayTimeout > 0) {
-      setTimeout(() => {
-        startOverlay();
-      }, overlayTimeout);
-    }
+
+    if (sideTimeout > 0) setTimeout(()=> showSideNotification(`${prayer} in 5 minutes`,"Get ready to pray!"), sideTimeout);
+    if (overlayTimeout > 0) setTimeout(startOverlay, overlayTimeout);
   });
 }
 
+// Fetch prayer times from Aladhan API
+function fetchPrayerTimes(lat, lon) {
+  fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=4`)
+  .then(res => res.json())
+  .then(data => {
+    if(data.code===200){
+      const t = data.data.timings;
+      document.getElementById('fajr').textContent = t.Fajr;
+      document.getElementById('dhuhr').textContent = t.Dhuhr;
+      document.getElementById('asr').textContent = t.Asr;
+      document.getElementById('maghrib').textContent = t.Maghrib;
+      document.getElementById('isha').textContent = t.Isha;
+      scheduleNotifications(t);
+    }
+  })
+  .catch(err => console.error(err));
+}
+
 // Get user location
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(pos => {
-    fetchPrayerTimes(pos.coords.latitude, pos.coords.longitude);
-  }, err => {
-    console.error("Geolocation failed, using Oakville default.");
-    fetchPrayerTimes(43.4675, -79.6877); // Oakville fallback
-  });
-} else {
-  console.error("Geolocation not supported, using Oakville default.");
-  fetchPrayerTimes(43.4675, -79.6877);
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(pos => fetchPrayerTimes(pos.coords.latitude,pos.coords.longitude),
+  err => fetchPrayerTimes(43.4675,-79.6877)); // Oakville fallback
+}else{
+  fetchPrayerTimes(43.4675,-79.6877);
 }
 </script>
 </body>

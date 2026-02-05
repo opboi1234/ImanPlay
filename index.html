@@ -91,7 +91,7 @@
     <div class="prayer-time"><span>Isha</span><span id="isha">--:--</span></div>
   </div>
 
-  <button id="sampleNotification">Show Sample Notification 🔔</button>
+  <button id="sampleNotification">Show Sample Side Notification 🔔</button>
 </main>
 
 <div id="overlay">
@@ -118,15 +118,14 @@ if (Notification.permission !== "granted") {
   Notification.requestPermission();
 }
 
-// Show a side notification
-function showNotification(title, body) {
+// Show a small side notification
+function showSideNotification(title, body) {
   if (Notification.permission === "granted") {
     const notification = new Notification(title, { 
       body: body, 
       icon: "https://cdn-icons-png.flaticon.com/512/616/616408.png"
     });
     praySound.play();
-    notification.onclick = () => startOverlay();
   }
 }
 
@@ -134,7 +133,6 @@ function showNotification(title, body) {
 function startOverlay() {
   overlay.style.display = "flex";
   praySound.play();
-  // Disable clicks on underlying content
   document.body.style.pointerEvents = "none";
   overlay.style.pointerEvents = "all";
 
@@ -144,9 +142,9 @@ function startOverlay() {
   }, 7 * 60 * 1000); // 7 minutes
 }
 
-// Sample notification button
+// Sample side notification button
 document.getElementById('sampleNotification').addEventListener('click', () => {
-  showNotification("Sample Prayer Notification", "Click to see overlay for 7 minutes");
+  showSideNotification("Dhuhr in 5 minutes", "Click this small notification to trigger overlay");
 });
 
 // Fetch prayer times from Aladhan API
@@ -168,29 +166,33 @@ function fetchPrayerTimes(lat, lon) {
     .catch(err => console.error(err));
 }
 
-// Schedule notifications 5 minutes before each prayer
+// Schedule notifications
 function scheduleNotifications(timings) {
-  const prayerOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+  const prayerOrder = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
   const now = new Date();
 
   prayerOrder.forEach(prayer => {
     const [hour, minute] = timings[prayer].split(':');
-    let prayerTime = new Date();
-    prayerTime.setHours(parseInt(hour), parseInt(minute), 0, 0);
+    const prayerTime = new Date();
+    prayerTime.setHours(parseInt(hour), parseInt(minute),0,0);
 
-    const notificationTime = new Date(prayerTime.getTime() - 5*60*1000); // 5 mins before
-    let timeout = notificationTime - now;
+    const sideNotificationTime = new Date(prayerTime.getTime() - 5*60*1000); // 5 mins before
 
-    if (timeout > 0) { // schedule only future notifications
+    let sideTimeout = sideNotificationTime - now;
+    let overlayTimeout = prayerTime - now;
+
+    if (sideTimeout > 0) {
+      // Schedule side notification 5 mins before
       setTimeout(() => {
-        showNotification(`${prayer} in 5 minutes`, "Get ready to pray!");
+        showSideNotification(`${prayer} in 5 minutes`, "Get ready to pray!");
+      }, sideTimeout);
+    }
 
-        // Schedule overlay at exact prayer time
-        const overlayTimeout = prayerTime - new Date();
-        if (overlayTimeout > 0) {
-          setTimeout(() => startOverlay(), overlayTimeout);
-        }
-      }, timeout);
+    if (overlayTimeout > 0) {
+      // Schedule full overlay at prayer time
+      setTimeout(() => {
+        startOverlay();
+      }, overlayTimeout);
     }
   });
 }
@@ -200,12 +202,11 @@ if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(pos => {
     fetchPrayerTimes(pos.coords.latitude, pos.coords.longitude);
   }, err => {
-    console.error("Geolocation failed, using Oakville as default.");
-    // Oakville fallback coordinates
-    fetchPrayerTimes(43.4675, -79.6877);
+    console.error("Geolocation failed, using Oakville default.");
+    fetchPrayerTimes(43.4675, -79.6877); // Oakville fallback
   });
 } else {
-  console.error("Geolocation not supported, using Oakville as default.");
+  console.error("Geolocation not supported, using Oakville default.");
   fetchPrayerTimes(43.4675, -79.6877);
 }
 </script>

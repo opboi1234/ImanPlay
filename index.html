@@ -69,6 +69,7 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    pointer-events: all;
   }
   #overlay p {
     font-family: 'Amiri', serif;
@@ -95,7 +96,7 @@
 
 <div id="overlay">
   <p>Time to Pray! 🙏</p>
-  <p>You cannot close this for 7 minutes</p>
+  <p>You cannot leave this tab for 7 minutes</p>
 </div>
 
 <audio id="praySound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"></audio>
@@ -104,17 +105,28 @@
 const praySound = document.getElementById('praySound');
 const overlay = document.getElementById('overlay');
 
+// Warn user if they try to close tab during overlay
+window.addEventListener("beforeunload", function (e) {
+  if (overlay.style.display === "flex") {
+    e.preventDefault();
+    e.returnValue = "You are in prayer time! Are you sure you want to leave?";
+  }
+});
+
 // Request notification permission
 if (Notification.permission !== "granted") {
   Notification.requestPermission();
 }
 
-// Show a browser notification
+// Show a side notification
 function showNotification(title, body) {
   if (Notification.permission === "granted") {
-    const notification = new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/616/616408.png" });
+    const notification = new Notification(title, { 
+      body: body, 
+      icon: "https://cdn-icons-png.flaticon.com/512/616/616408.png"
+    });
     praySound.play();
-    notification.onclick = () => { startOverlay(); };
+    notification.onclick = () => startOverlay();
   }
 }
 
@@ -122,9 +134,13 @@ function showNotification(title, body) {
 function startOverlay() {
   overlay.style.display = "flex";
   praySound.play();
-  // Prevent interaction for 7 minutes
+  // Disable clicks on underlying content
+  document.body.style.pointerEvents = "none";
+  overlay.style.pointerEvents = "all";
+
   setTimeout(() => {
     overlay.style.display = "none";
+    document.body.style.pointerEvents = "auto";
   }, 7 * 60 * 1000); // 7 minutes
 }
 
@@ -133,7 +149,7 @@ document.getElementById('sampleNotification').addEventListener('click', () => {
   showNotification("Sample Prayer Notification", "Click to see overlay for 7 minutes");
 });
 
-// Fetch prayer times using Aladhan API with geolocation
+// Fetch prayer times from Aladhan API
 function fetchPrayerTimes(lat, lon) {
   fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=4`)
     .then(res => res.json())
@@ -161,29 +177,31 @@ function scheduleNotifications(timings) {
     const [hour, minute] = timings[prayer].split(':');
     let prayerTime = new Date();
     prayerTime.setHours(parseInt(hour), parseInt(minute), 0, 0);
-    // Subtract 5 minutes
-    prayerTime = new Date(prayerTime.getTime() - 5*60*1000);
 
-    let timeout = prayerTime - now;
-    if (timeout < 0) {
-      timeout += 24*60*60*1000; // schedule next day
+    const notificationTime = new Date(prayerTime.getTime() - 5*60*1000); // 5 mins before
+    let timeout = notificationTime - now;
+
+    if (timeout > 0) { // schedule only future notifications
+      setTimeout(() => {
+        showNotification(`${prayer} in 5 minutes`, "Get ready to pray!");
+
+        // Schedule overlay at exact prayer time
+        const overlayTimeout = prayerTime - new Date();
+        if (overlayTimeout > 0) {
+          setTimeout(() => startOverlay(), overlayTimeout);
+        }
+      }, timeout);
     }
-
-    setTimeout(() => {
-      showNotification(`${prayer} in 5 minutes`, "Get ready to pray!");
-      // After notification, start full block
-      setTimeout(() => { startOverlay(); }, 5*60*1000); // start overlay at exact prayer time
-    }, timeout);
   });
 }
 
-// Get user location and start
+// Get user location
 if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(pos => {
     fetchPrayerTimes(pos.coords.latitude, pos.coords.longitude);
   }, err => {
     console.error("Geolocation failed, using Oakville as default.");
-    // Oakville fallback
+    // Oakville fallback coordinates
     fetchPrayerTimes(43.4675, -79.6877);
   });
 } else {

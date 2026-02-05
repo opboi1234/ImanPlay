@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ImanPlay - Prayer Reminder</title>
+<title>ImanPlay - Prayer Reminder (Test Mode)</title>
 <link href="https://fonts.googleapis.com/css2?family=Amiri&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
   body {
@@ -58,7 +58,7 @@
     background-color: #0654b3;
   }
   #overlay {
-    display: none;
+    display: none; /* hidden by default */
     position: fixed;
     top:0; left:0; right:0; bottom:0;
     background-color: rgba(11,61,145,0.95);
@@ -79,7 +79,7 @@
 </head>
 <body>
 
-<header>ImanPlay - Prayer Reminder</header>
+<header>ImanPlay - Prayer Reminder (Test Mode)</header>
 
 <main>
   <div class="prayer-times">
@@ -91,7 +91,7 @@
     <div class="prayer-time"><span>Isha</span><span id="isha">--:--</span></div>
   </div>
 
-  <button id="sampleNotification">Show Sample Side Notification 🔔</button>
+  <button id="testMode">Test Prayer Notification & Overlay</button>
 </main>
 
 <div id="overlay">
@@ -118,7 +118,7 @@ if (Notification.permission !== "granted") {
   Notification.requestPermission();
 }
 
-// Show a small side notification
+// Show side notification
 function showSideNotification(title, body) {
   if (Notification.permission === "granted") {
     const notification = new Notification(title, { 
@@ -129,7 +129,7 @@ function showSideNotification(title, body) {
   }
 }
 
-// Show full-screen overlay for 7 minutes
+// Show full overlay for 7 minutes
 function startOverlay() {
   overlay.style.display = "flex";
   praySound.play();
@@ -139,76 +139,21 @@ function startOverlay() {
   setTimeout(() => {
     overlay.style.display = "none";
     document.body.style.pointerEvents = "auto";
-  }, 7 * 60 * 1000); // 7 minutes
+  }, 7 * 60 * 1000);
 }
 
-// Sample side notification button
-document.getElementById('sampleNotification').addEventListener('click', () => {
-  showSideNotification("Dhuhr in 5 minutes", "Click this small notification to trigger overlay");
+// Test Mode Button
+document.getElementById('testMode').addEventListener('click', () => {
+  // Side notification 5 seconds before overlay
+  setTimeout(() => {
+    showSideNotification("Test Prayer in 5 seconds", "Get ready to pray!");
+  }, 0); // triggers immediately
+
+  // Overlay 5 seconds later
+  setTimeout(() => {
+    startOverlay();
+  }, 5000); // 5 seconds
 });
-
-// Fetch prayer times from Aladhan API
-function fetchPrayerTimes(lat, lon) {
-  fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=4`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.code === 200) {
-        const timings = data.data.timings;
-        document.getElementById('fajr').textContent = timings.Fajr;
-        document.getElementById('dhuhr').textContent = timings.Dhuhr;
-        document.getElementById('asr').textContent = timings.Asr;
-        document.getElementById('maghrib').textContent = timings.Maghrib;
-        document.getElementById('isha').textContent = timings.Isha;
-
-        scheduleNotifications(timings);
-      }
-    })
-    .catch(err => console.error(err));
-}
-
-// Schedule notifications
-function scheduleNotifications(timings) {
-  const prayerOrder = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
-  const now = new Date();
-
-  prayerOrder.forEach(prayer => {
-    const [hour, minute] = timings[prayer].split(':');
-    const prayerTime = new Date();
-    prayerTime.setHours(parseInt(hour), parseInt(minute),0,0);
-
-    const sideNotificationTime = new Date(prayerTime.getTime() - 5*60*1000); // 5 mins before
-
-    let sideTimeout = sideNotificationTime - now;
-    let overlayTimeout = prayerTime - now;
-
-    if (sideTimeout > 0) {
-      // Schedule side notification 5 mins before
-      setTimeout(() => {
-        showSideNotification(`${prayer} in 5 minutes`, "Get ready to pray!");
-      }, sideTimeout);
-    }
-
-    if (overlayTimeout > 0) {
-      // Schedule full overlay at prayer time
-      setTimeout(() => {
-        startOverlay();
-      }, overlayTimeout);
-    }
-  });
-}
-
-// Get user location
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(pos => {
-    fetchPrayerTimes(pos.coords.latitude, pos.coords.longitude);
-  }, err => {
-    console.error("Geolocation failed, using Oakville default.");
-    fetchPrayerTimes(43.4675, -79.6877); // Oakville fallback
-  });
-} else {
-  console.error("Geolocation not supported, using Oakville default.");
-  fetchPrayerTimes(43.4675, -79.6877);
-}
 </script>
 </body>
 </html>

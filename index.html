@@ -1,204 +1,85 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>ImanPlay — Prayer reminders</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ImanPlay — Prayer reminders</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Amiri&family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri&family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-<style>
-:root{
-  --bg-1: #071226;
-  --bg-2: #09233b;
-  --card: linear-gradient(135deg,#0f2a4f 0%, #0b1f3a 100%);
-  --accent: #00ffcc;
-  --muted: rgba(255,255,255,0.75);
-  --glass: rgba(255,255,255,0.03);
-}
+  <style>
+    :root{
+      --bg-1:#071226; --bg-2:#09233b; --card:linear-gradient(135deg,#0f2a4f 0%, #0b1f3a 100%);
+      --accent:#00ffcc; --muted:rgba(255,255,255,0.78); --glass:rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;font-family:"Poppins",system-ui,Roboto; background:
+      radial-gradient(1200px 800px at 10% 10%, rgba(0,255,204,0.03), transparent 10%),
+      linear-gradient(180deg,var(--bg-1) 0%, var(--bg-2) 100%);
+      color:#fff;-webkit-font-smoothing:antialiased; padding-bottom:40px;
+    }
 
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family:"Poppins",system-ui,-apple-system,"Segoe UI",Roboto;
-  background: radial-gradient(1200px 800px at 10% 10%, rgba(0,255,204,0.04), transparent 10%),
-              linear-gradient(180deg,var(--bg-1) 0%, var(--bg-2) 100%);
-  color:#fff;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  overflow-x:hidden;
-  padding-bottom:40px;
-}
+    header{
+      text-align:center;padding:18px 16px;font-family:Amiri,serif;font-size:30px;
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      position:sticky;top:0;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);
+      border-bottom:1px solid rgba(255,255,255,0.03);z-index:20;
+    }
+    .controls{display:flex;gap:8px}
+    .btn{
+      background:var(--glass);color:var(--muted);border:1px solid rgba(255,255,255,0.04);
+      padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;transition:all .16s;
+      font-size:14px;
+    }
+    .btn:hover{transform:translateY(-3px)}
+    .btn.primary{background:linear-gradient(90deg,#075a87,#0ea387);color:#021217;border:0}
 
-/* Header */
-header{
-  text-align:center;
-  padding:28px 16px;
-  font-family:Amiri,serif;
-  font-size:32px;
-  letter-spacing:0.6px;
-  background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);
-  border-bottom:1px solid rgba(255,255,255,0.03);
-  display:flex;
-  gap:12px;
-  align-items:center;
-  justify-content:center;
-  position:sticky;
-  top:0;
-  z-index:20;
-}
+    .container{max-width:980px;margin:20px auto;display:grid;grid-template-columns:1fr 360px;gap:18px;padding:0 16px}
+    .panel{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 10px 40px rgba(2,10,20,0.55);border:1px solid rgba(255,255,255,0.03)}
+    .times{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+    .row{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;
+         background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);transition:transform .2s,box-shadow .2s;border:1px solid rgba(255,255,255,0.02)}
+    .row:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(2,6,12,0.5)}
+    .label{display:flex;gap:10px;align-items:center;font-weight:700}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(0,255,204,0.12)}
 
-/* Top bar controls */
-.controls{
-  margin-left:12px;
-  display:flex;
-  gap:8px;
-}
-.btn{
-  background:var(--glass);
-  color:var(--muted);
-  border:1px solid rgba(255,255,255,0.04);
-  padding:8px 12px;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:600;
-  transition:all .18s ease;
-  font-size:14px;
-}
-.btn:hover{transform:translateY(-3px); box-shadow:0 6px 18px rgba(0,0,0,0.4)}
-.btn.primary{
-  background:linear-gradient(90deg,#075a87,#0ea387);
-  color:#021217;
-  border:0;
-}
+    .side{display:flex;flex-direction:column;gap:12px}
+    .card{background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .small{font-size:13px;color:var(--muted)}
+    .big{font-size:18px;font-weight:700;color:white}
+    .quote{font-style:italic;line-height:1.45;color:#e6f7f2}
 
-/* Layout */
-.container{
-  max-width:980px;
-  margin:28px auto;
-  display:grid;
-  grid-template-columns:1fr 360px;
-  gap:20px;
-  padding:0 16px;
-}
+    /* overlay lock */
+    #overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999;background:linear-gradient(180deg, rgba(2,6,12,0.85), rgba(1,8,18,0.96));backdrop-filter:blur(6px);color:#fff;flex-direction:column;padding:24px}
+    #overlay .panel{max-width:680px;text-align:center;padding:28px}
+    #overlay h1{font-family:Amiri;font-size:56px;margin:0 0 6px}
+    #countdown{font-size:48px;color:var(--accent);margin-top:12px}
 
-/* Main panel */
-.panel{
-  background:var(--card);
-  border-radius:16px;
-  padding:18px;
-  box-shadow:0 10px 40px rgba(2,10,20,0.6);
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,0.03);
-}
+    /* side in-page notifs */
+    #sideTray{position:fixed;top:26px;right:20px;display:flex;flex-direction:column;gap:10px;z-index:9998;pointer-events:none}
+    .sideNotify{pointer-events:auto;width:340px;padding:10px;border-radius:12px;background:linear-gradient(90deg,#083b66 0%, #0e2a5b 100%);box-shadow:0 18px 40px rgba(3,9,22,0.6);color:#fff;transform:translateX(120%);opacity:0;display:flex;gap:10px;align-items:center;border:1px solid rgba(255,255,255,0.04);animation:slideSide .5s cubic-bezier(.2,.9,.2,1) forwards}
+    .sideNotify img{width:44px;height:44px;border-radius:8px;flex-shrink:0}
+    .sideNotify .text{flex:1}
+    .sideNotify .actions{display:flex;gap:6px;margin-left:8px}
+    .sideNotify .actions .btn{padding:6px 8px;font-size:13px;border-radius:8px}
+    @keyframes slideSide{to{transform:translateX(0);opacity:1} from{transform:translateX(120%);opacity:0}}
 
-.times{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  margin-top:6px;
-}
-.row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:12px;
-  border-radius:12px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
-  transition:transform .2s ease, box-shadow .2s ease;
-  border:1px solid rgba(255,255,255,0.02);
-}
-.row:hover{transform:translateY(-4px); box-shadow:0 10px 30px rgba(2,6,12,0.5)}
-.row .label{display:flex;gap:10px;align-items:center;font-weight:600}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(0,255,204,0.15)}
+    .fadeIn{animation:fadeIn .36s ease both}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none}}
 
-/* Side column */
-.side{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
+    .lock{pointer-events:none;user-select:none}
 
-/* Cards in side */
-.card{
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  padding:12px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,0.03);
-}
-.small{font-size:13px;color:var(--muted)}
-.big{font-size:18px;font-weight:700;color:white}
+    .row .timeSmall{font-weight:600;color:var(--accent)}
+    .controls input[type=range]{width:120px}
+    .muted{opacity:.5}
 
-/* Hadith & Dua */
-.quote{
-  font-style:italic;
-  line-height:1.45;
-  color:#e6f7f2;
-}
-
-/* Hijri/Gregorian */
-.dateRow{display:flex;justify-content:space-between;align-items:center;gap:12px}
-
-/* Overlay full-screen lock */
-#overlay{
-  position:fixed;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-  background:linear-gradient(180deg, rgba(2,6,12,0.85), rgba(1,8,18,0.95));
-  backdrop-filter: blur(6px);
-  color:#fff;
-  flex-direction:column;
-  padding:24px;
-}
-#overlay .panel{
-  max-width:680px;
-  text-align:center;
-  padding:28px;
-}
-#overlay h1{font-family:Amiri;font-size:58px;margin:0 0 6px}
-#overlay p{margin:0 0 12px;font-size:18px;opacity:.95}
-#countdown{font-size:48px;color:var(--accent);margin-top:12px}
-
-/* Side in-page notification (fallback and in addition to system notify) */
-#sideTray{position:fixed;top:26px;right:20px;display:flex;flex-direction:column;gap:10px;z-index:9998;pointer-events:none}
-.sideNotify{
-  pointer-events:auto;
-  width:320px;
-  padding:12px 12px;
-  border-radius:12px;
-  background:linear-gradient(90deg,#083b66 0%, #0e2a5b 100%);
-  box-shadow:0 18px 40px rgba(3,9,22,0.6);
-  color:#fff;
-  transform:translateX(120%);
-  opacity:0;
-  display:flex;
-  gap:10px;
-  align-items:center;
-  border:1px solid rgba(255,255,255,0.04);
-  animation:slideSide .6s cubic-bezier(.2,.9,.2,1) forwards;
-}
-.sideNotify img{width:44px;height:44px;border-radius:8px;flex-shrink:0}
-.sideNotify .text{flex:1}
-.sideNotify b{display:block;font-weight:700}
-@keyframes slideSide{to{transform:translateX(0);opacity:1} from{transform:translateX(120%);opacity:0}}
-
-/* subtle transitions */
-.fadeIn{animation:fadeIn .4s ease both}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none}}
-
-/* locked pointer-events helper */
-.lock{pointer-events:none;user-select:none}
-
-/* responsive */
-@media (max-width:900px){
-  .container{grid-template-columns:1fr; padding-bottom:80px}
-  .side{order:2}
-}
-</style>
+    @media (max-width:900px){
+      .container{grid-template-columns:1fr;padding-bottom:80px}
+      .side{order:2}
+    }
+  </style>
 </head>
 <body>
 
@@ -222,28 +103,61 @@ header{
     </div>
 
     <div class="times" id="timesList" style="margin-top:12px">
-      <div class="row fadeIn"><div class="label"><span class="dot"></span><span>Fajr</span></div><div id="fajr">--:--</div></div>
-      <div class="row fadeIn" style="animation-delay:.03s"><div class="label"><span class="dot"></span><span>Dhuhr</span></div><div id="dhuhr">--:--</div></div>
-      <div class="row fadeIn" style="animation-delay:.06s"><div class="label"><span class="dot"></span><span>Asr</span></div><div id="asr">--:--</div></div>
-      <div class="row fadeIn" style="animation-delay:.09s"><div class="label"><span class="dot"></span><span>Maghrib</span></div><div id="maghrib">--:--</div></div>
-      <div class="row fadeIn" style="animation-delay:.12s"><div class="label"><span class="dot"></span><span>Isha</span></div><div id="isha">--:--</div></div>
+      <div class="row fadeIn"><div class="label"><span class="dot"></span><span>Fajr</span></div><div id="fajr" class="timeSmall">--:--</div></div>
+      <div class="row fadeIn" style="animation-delay:.03s"><div class="label"><span class="dot"></span><span>Dhuhr</span></div><div id="dhuhr" class="timeSmall">--:--</div></div>
+      <div class="row fadeIn" style="animation-delay:.06s"><div class="label"><span class="dot"></span><span>Asr</span></div><div id="asr" class="timeSmall">--:--</div></div>
+      <div class="row fadeIn" style="animation-delay:.09s"><div class="label"><span class="dot"></span><span>Maghrib</span></div><div id="maghrib" class="timeSmall">--:--</div></div>
+      <div class="row fadeIn" style="animation-delay:.12s"><div class="label"><span class="dot"></span><span>Isha</span></div><div id="isha" class="timeSmall">--:--</div></div>
     </div>
 
     <div style="margin-top:14px; display:flex; gap:12px; align-items:center; justify-content:space-between">
       <div class="small">Next prayer: <span id="nextPrayer" style="font-weight:700">—</span></div>
       <div class="small">Time until next: <span id="timeUntil" style="font-weight:700">—</span></div>
     </div>
+
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <label class="small">Adhan sound:</label>
+      <select id="soundSelect" class="btn" style="padding:8px;border-radius:8px">
+        <option value="digital">Digital alarm (short)</option>
+        <option value="adhan1">Adhan (call to prayer)</option>
+        <option value="adhan2">Adhan (melodic)</option>
+      </select>
+
+      <label class="small" style="margin-left:8px">Lock duration:</label>
+      <input id="lockRange" type="range" min="1" max="15" value="7" />
+      <span id="lockLabel" class="small" style="min-width:36px;font-weight:700">7m</span>
+
+      <label style="margin-left:8px" class="small">Do not disturb:</label>
+      <input id="dndCheckbox" type="checkbox" /> <span class="small muted" id="dndInfo">off</span>
+    </div>
+
   </section>
 
   <aside class="side">
     <div class="card">
-      <div class="big">Hadith of the day</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="big">Hadith of the day</div>
+        <div style="display:flex;gap:6px">
+          <button id="prevHadith" class="btn">‹</button>
+          <button id="nextHadith" class="btn">›</button>
+          <button id="randHadith" class="btn">🔀</button>
+        </div>
+      </div>
       <p id="hadith" class="quote small" style="margin-top:8px">Loading…</p>
+      <div style="margin-top:8px" class="small">You can use the arrows to change hadith and it will be remembered.</div>
     </div>
 
     <div class="card">
-      <div class="big">Dua of the day</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="big">Dua of the day</div>
+        <div style="display:flex;gap:6px">
+          <button id="prevDua" class="btn">‹</button>
+          <button id="nextDua" class="btn">›</button>
+          <button id="randDua" class="btn">🔀</button>
+        </div>
+      </div>
       <p id="dua" class="quote small" style="margin-top:8px">Loading…</p>
+      <div style="margin-top:8px" class="small">Click arrows to change and save your favourite dua.</div>
     </div>
 
     <div class="card">
@@ -252,7 +166,7 @@ header{
         <button id="muteBtn" class="btn">Mute sound</button>
         <button id="unlockNowBtn" class="btn">End lock early</button>
       </div>
-      <div style="margin-top:8px" class="small">Tip: Allow notifications and click "Test alert" once to grant sound permission.</div>
+      <div style="margin-top:8px" class="small">Tip: click "Enable notifications & sound" then allow prompts. Serve over HTTPS or localhost for full features.</div>
     </div>
 
   </aside>
@@ -271,286 +185,340 @@ header{
   </div>
 </div>
 
-<!-- side tray for in-page notifications (fallback) -->
+<!-- side tray -->
 <div id="sideTray" aria-hidden="true"></div>
 
 <!-- audio -->
-<audio id="sound" preload="auto" src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg"></audio>
+<audio id="sound" preload="auto"></audio>
 
 <script>
 /*
-  Improvements:
-  - Better UI and transitions.
-  - System notification + in-page side notification fallback.
-  - "Enable" button to request permission and allow audio playback (user gesture).
-  - Hadith & Dua rotate deterministically by day-of-year (no external API required).
-  - Hijri date from aladhan response; fallback to Intl.DateTimeFormat if needed.
-  - Next prayer indicator + time until it.
-  - Lock overlay (7 minutes) with ability to end early (with confirmation).
-  - All features work when served over HTTPS or localhost (required for geolocation & notifications).
+  Enhancements in this file:
+  - Uses Service Worker (sw.js) to show notifications via registration.showNotification when possible (gives better system integration).
+  - Replaced dog icon with mosque icon for notifications.
+  - Buttons to change hadith & dua (prev/next/random) and saves selection to localStorage.
+  - More features: adhan sound selection, custom lock duration slider, Do Not Disturb toggle, snooze on in-page notifications.
+  - Persistent notifications via SW registration when available. Still falls back to Notification API.
+  Notes:
+  - For geolocation and notifications to work, serve over HTTPS or open on localhost.
+  - Browser limitations: creating persistent OS-level notifications while the page is closed typically requires a server push or a service worker with push capability; here we use registration.showNotification() for improved behaviour while the page is open.
 */
 
-const sound = document.getElementById('sound');
+const SOUND_MAP = {
+  digital: 'https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg',
+  adhan1: 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Adhan.ogg', // public adhan file
+  adhan2: 'https://upload.wikimedia.org/wikipedia/commons/6/63/Adhan_%28short%29.ogg' // alternate
+};
+
+const mosqueIcon = 'https://img.icons8.com/ios-filled/96/ffffff/mosque.png'; // mosque icon (white) for notifications
+
+// Elements
+const soundEl = document.getElementById('sound');
 const enableBtn = document.getElementById('enableBtn');
 const testBtn = document.getElementById('testBtn');
 const muteBtn = document.getElementById('muteBtn');
-
-let soundAllowed = false;
-let notificationsAllowed = (Notification && Notification.permission === 'granted');
-let locked = false;
 const sideTray = document.getElementById('sideTray');
 const overlay = document.getElementById('overlay');
 const stopLockBtn = document.getElementById('stopLockBtn');
-
 const hijriDateEl = document.getElementById('hijriDate');
 const gregDateEl = document.getElementById('gregDate');
 const nextPrayerEl = document.getElementById('nextPrayer');
 const timeUntilEl = document.getElementById('timeUntil');
-
 const hadithEl = document.getElementById('hadith');
 const duaEl = document.getElementById('dua');
+const timesEls = { Fajr: document.getElementById('fajr'), Dhuhr: document.getElementById('dhuhr'), Asr: document.getElementById('asr'), Maghrib: document.getElementById('maghrib'), Isha: document.getElementById('isha') };
+const soundSelect = document.getElementById('soundSelect');
+const lockRange = document.getElementById('lockRange');
+const lockLabel = document.getElementById('lockLabel');
+const dndCheckbox = document.getElementById('dndCheckbox');
+const dndInfo = document.getElementById('dndInfo');
 
-const timesEls = {
-  Fajr: document.getElementById('fajr'),
-  Dhuhr: document.getElementById('dhuhr'),
-  Asr: document.getElementById('asr'),
-  Maghrib: document.getElementById('maghrib'),
-  Isha: document.getElementById('isha')
-};
-
-// Small curated lists for Hadith of the day and Dua of the day.
-// We'll pick deterministically based on the day-of-year so it changes daily without external calls.
+// hadiths & duas (expandable)
 const hadiths = [
   "Actions are judged by intentions. — Prophet Muhammad (peace be upon him).",
   "Whoever believes in Allah and the Last Day, let him speak good or remain silent. — Prophet Muhammad (peace be upon him).",
   "None of you truly believes until he loves for his brother what he loves for himself. — Prophet Muhammad (peace be upon him).",
   "The best among you are those who have the best manners and character. — Prophet Muhammad (peace be upon him).",
-  "The strong man is not the one who can overpower others; the strong man is the one who controls himself. — Prophet Muhammad (peace be upon him)."
+  "The strong man is not the one who can overpower others; the strong man is the one who controls himself. — Prophet Muhammad (peace be upon him).",
+  "Seek knowledge from the cradle to the grave."
 ];
-
 const duas = [
-  "O Allah, guide me among those You have guided, and grant me health among those You have granted health. (Short morning dua)",
+  "O Allah, guide me among those You have guided, and grant me health among those You have granted health.",
   "Our Lord, give us in this world that which is good and in the Hereafter that which is good. — (Qur'an 2:201)",
   "O Turner of the hearts, keep my heart firm upon Your religion.",
   "Rabbi inni lima anzalta ilayya min khayrin faqeer — My Lord, truly I am in need of whatever good You bestow on me.",
-  "O Allah, make me of those who repent and make me of those who are purified."
+  "O Allah, make me of those who repent and make me of those who are purified.",
+  "O Allah, increase me in knowledge and grant me beneficial knowledge."
 ];
 
-function dayIndex(arr){
-  const now = new Date();
-  const start = new Date(now.getFullYear(),0,0);
-  const diff = now - start;
-  const oneDay = 1000*60*60*24;
-  const dayOfYear = Math.floor(diff/oneDay);
-  return dayOfYear % arr.length;
+// state
+let soundAllowed = false;
+let notificationsAllowed = (typeof Notification !== 'undefined' && Notification.permission === 'granted');
+let locked = false;
+let lockTimer = null;
+let todaysTimings = null;
+let swRegistration = null;
+let doNotDisturbUntil = parseInt(localStorage.getItem('dndUntil') || '0',10) || 0;
+
+// load saved selections
+let hadithIndex = parseInt(localStorage.getItem('hadithIndex') || '0',10) || 0;
+let duaIndex = parseInt(localStorage.getItem('duaIndex') || '0',10) || 0;
+let savedSound = localStorage.getItem('adhanSound') || 'digital';
+let savedLockMins = parseInt(localStorage.getItem('lockMins') || '7',10) || 7;
+let muted = (localStorage.getItem('muted') === '1');
+
+// apply saved UI
+soundSelect.value = savedSound;
+lockRange.value = savedLockMins;
+lockLabel.textContent = `${savedLockMins}m`;
+soundEl.src = SOUND_MAP[savedSound];
+soundEl.muted = muted;
+muteBtn.textContent = muted ? 'Unmute sound' : 'Mute sound';
+if(doNotDisturbUntil > Date.now()){
+  dndCheckbox.checked = true;
+  dndInfo.textContent = 'on until ' + new Date(doNotDisturbUntil).toLocaleTimeString();
+} else {
+  dndCheckbox.checked = false;
+  dndInfo.textContent = 'off';
 }
 
-function showHadithAndDua(){
-  hadithEl.textContent = hadiths[dayIndex(hadiths)];
-  duaEl.textContent = duas[dayIndex(duas)];
+// register service worker (optional) for better notification behaviour
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').then(reg=>{
+    console.log('SW registered', reg);
+    swRegistration = reg;
+  }).catch(err=>{
+    console.warn('SW register failed', err);
+  });
 }
-showHadithAndDua();
 
-// system permissions
-enableBtn.addEventListener('click', async ()=>{
-  // request notifications
+// hadith & dua UI handlers and persistence
+function showHadith(){ hadithEl.textContent = hadiths[hadithIndex % hadiths.length]; localStorage.setItem('hadithIndex', String(hadithIndex)); }
+function showDua(){ duaEl.textContent = duas[duaIndex % duas.length]; localStorage.setItem('duaIndex', String(duaIndex)); }
+showHadith(); showDua();
+
+document.getElementById('prevHadith').addEventListener('click', ()=>{ hadithIndex = (hadithIndex - 1 + hadiths.length) % hadiths.length; showHadith(); flashSide('Hadith changed', hadiths[hadithIndex], 4000); });
+document.getElementById('nextHadith').addEventListener('click', ()=>{ hadithIndex = (hadithIndex + 1) % hadiths.length; showHadith(); flashSide('Hadith changed', hadiths[hadithIndex], 4000); });
+document.getElementById('randHadith').addEventListener('click', ()=>{ hadithIndex = Math.floor(Math.random()*hadiths.length); showHadith(); flashSide('Hadith changed', hadiths[hadithIndex], 4000); });
+
+document.getElementById('prevDua').addEventListener('click', ()=>{ duaIndex = (duaIndex - 1 + duas.length) % duas.length; showDua(); flashSide('Dua changed', duas[duaIndex], 4000); });
+document.getElementById('nextDua').addEventListener('click', ()=>{ duaIndex = (duaIndex + 1) % duas.length; showDua(); flashSide('Dua changed', duas[duaIndex], 4000); });
+document.getElementById('randDua').addEventListener('click', ()=>{ duaIndex = Math.floor(Math.random()*duas.length); showDua(); flashSide('Dua changed', duas[duaIndex], 4000); });
+
+// enable button: request permissions and allow sound (user gesture)
+enableBtn.addEventListener('click', async () => {
   if('Notification' in window){
     try{
       const p = await Notification.requestPermission();
       notificationsAllowed = (p === 'granted');
-    }catch(e){
-      // ignore
-    }
+    }catch(e){}
   }
-
-  // play a short sound to unlock audio on some browsers
-  try{
-    await sound.play();
-    sound.pause();
-    sound.currentTime = 0;
-    soundAllowed = true;
-  }catch(e){
-    // user gesture occurred, but still may fail if autoplay blocked
-    soundAllowed = true; // after button click we assume allowed
-  }
-
-  enableBtn.textContent = "Enabled";
+  // unlock audio via user gesture
+  try{ await soundEl.play(); soundEl.pause(); soundEl.currentTime = 0; soundAllowed = true; }catch(e){ soundAllowed = true; }
+  enableBtn.textContent = 'Enabled';
   enableBtn.classList.add('primary');
-  flashSide("Notifications enabled", "You will get reminders");
+  flashSide('Enabled', 'Notifications & sound enabled');
 });
 
-// test alert
-testBtn.addEventListener('click', ()=>{
-  flashSide("Test alert", "This is a sample reminder");
-  if(notificationsAllowed) new Notification("ImanPlay — Test", {body:"This is a sample reminder", icon:"https://cdn-icons-png.flaticon.com/512/616/616408.png"});
+// Test alert
+testBtn.addEventListener('click', ()=> {
+  sendNotification('ImanPlay — Test', { body: 'This is a test reminder', icon: mosqueIcon });
   playSound();
+  flashSide('Test alert', 'This is a sample reminder');
 });
 
-// mute
+// sound selection
+soundSelect.addEventListener('change', (e)=>{
+  const v = e.target.value;
+  soundEl.src = SOUND_MAP[v] || SOUND_MAP.digital;
+  localStorage.setItem('adhanSound', v);
+  flashSide('Adhan sound set', v);
+});
+
+// lock duration slider
+lockRange.addEventListener('input', (e)=>{
+  const mins = e.target.value;
+  lockLabel.textContent = `${mins}m`;
+});
+lockRange.addEventListener('change', (e)=>{
+  localStorage.setItem('lockMins', String(e.target.value));
+  flashSide('Lock duration saved', `${e.target.value} minutes`);
+});
+
+// DND checkbox
+dndCheckbox.addEventListener('change', ()=>{
+  if(dndCheckbox.checked){
+    // ask for how long? default 2 hours
+    const until = Date.now() + (2*60*60*1000);
+    doNotDisturbUntil = until;
+    localStorage.setItem('dndUntil', String(until));
+    dndInfo.textContent = 'on until ' + new Date(until).toLocaleTimeString();
+    flashSide('Do Not Disturb on', 'Notifications paused for 2 hours');
+  } else {
+    doNotDisturbUntil = 0;
+    localStorage.removeItem('dndUntil');
+    dndInfo.textContent = 'off';
+    flashSide('Do Not Disturb off', 'Notifications resumed');
+  }
+});
+
+// mute button
 muteBtn.addEventListener('click', ()=>{
-  sound.muted = !sound.muted;
-  muteBtn.textContent = sound.muted ? "Unmute sound" : "Mute sound";
+  muted = !muted;
+  soundEl.muted = muted;
+  muteBtn.textContent = muted ? 'Unmute sound' : 'Mute sound';
+  localStorage.setItem('muted', muted ? '1' : '0');
 });
 
-// stop lock early with confirmation
+// unlock early
+document.getElementById('unlockNowBtn').addEventListener('click', ()=>{
+  if(!locked) { flashSide('No active lock', 'Nothing to end'); return; }
+  if(confirm('End the prayer lock early?')) endLock();
+});
+
+// stop lock button inside overlay
 stopLockBtn.addEventListener('click', ()=>{
   if(!locked) return;
-  if(confirm("Are you sure you want to end the prayer lock early?")){
-    endLock();
-    flashSide("Lock ended", "You chose to end the overlay early");
-  }
+  if(confirm('Are you sure you want to end the prayer lock early?')) endLock();
 });
 
-// helper: show in-page side notification
-function flashSide(title, text){
-  const div = document.createElement('div');
-  div.className = 'sideNotify';
-  div.innerHTML = `<img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="">
-                   <div class="text"><b>${title}</b><div style="font-size:13px;opacity:.92">${text}</div></div>`;
-  sideTray.appendChild(div);
-  // auto remove after 12s
-  setTimeout(()=>{ div.style.transition='opacity .4s'; div.style.opacity='0'; setTimeout(()=>div.remove(),400); }, 12000);
-  // allow click to dismiss
-  div.addEventListener('click', ()=>div.remove());
+// play sound helper
+async function playSound(){
+  if(soundEl.muted) return;
+  try{ soundEl.currentTime = 0; await soundEl.play(); }catch(e){}
 }
 
-// play sound safely
-async function playSound(){
-  if(sound.muted) return;
-  try{
-    sound.currentTime = 0;
-    await sound.play();
-  }catch(e){
-    // ignore play errors (usually due to autoplay policies)
-    // the user should press enable/test to allow sound.
+// notification helper that prefers service worker registration.showNotification if available
+function sendNotification(title, options = {}){
+  if(doNotDisturbUntil > Date.now()) return; // DND active
+
+  options.icon = options.icon || mosqueIcon;
+  // prefer SW showNotification for better system integration if available
+  if(swRegistration && swRegistration.showNotification){
+    try{
+      swRegistration.showNotification(title, options);
+      return;
+    }catch(e){ /* fall back */ }
+  }
+  if('Notification' in window && Notification.permission === 'granted'){
+    try{ new Notification(title, options); }catch(e){ console.warn('Notification failed', e); }
   }
 }
 
-// Lock overlay handling
-let lockTimer = null;
-function startLock(durationSeconds = 420){ // default 7 minutes
+// in-page side notification with snooze
+function flashSide(title, text, autoRemoveMs = 12000){
+  const div = document.createElement('div');
+  div.className = 'sideNotify';
+  const html = `
+    <img src="${mosqueIcon}" alt="mosque">
+    <div class="text"><b>${title}</b><div style="font-size:13px;margin-top:6px;opacity:.95">${text}</div></div>
+    <div class="actions">
+      <button class="btn" data-action="snooze">Snooze 10m</button>
+      <button class="btn" data-action="dismiss">Dismiss</button>
+    </div>`;
+  div.innerHTML = html;
+  sideTray.appendChild(div);
+
+  // event delegation for actions
+  div.querySelector('[data-action="dismiss"]').addEventListener('click', ()=>div.remove());
+  div.querySelector('[data-action="snooze"]').addEventListener('click', ()=>{
+    // schedule to show again after 10 minutes
+    setTimeout(()=> {
+      sendNotification(title, { body: text });
+      flashSide(title + ' (snoozed)', text, 8000);
+      playSound();
+    }, 10*60*1000);
+    div.remove();
+    flashSide('Snoozed', `${title} will remind you in 10 minutes`, 4000);
+  });
+
+  // allow click on whole div to dismiss
+  div.addEventListener('click', (e)=>{ if(e.target.closest('.actions')) return; div.remove(); });
+
+  if(autoRemoveMs) setTimeout(()=>{ div.style.opacity='0'; setTimeout(()=>div.remove(),400); }, autoRemoveMs);
+}
+
+// Lock overlay
+function startLock(durationMins = 7){
   if(locked) return;
   locked = true;
   overlay.style.display = 'flex';
   overlay.setAttribute('aria-hidden','false');
   document.body.classList.add('lock');
+
   playSound();
-
-  let seconds = durationSeconds;
-  const cdEl = document.getElementById('countdown');
-  cdEl.textContent = formatTime(seconds);
-
+  let seconds = durationMins * 60;
+  const cd = document.getElementById('countdown');
+  cd.textContent = formatTime(seconds);
   lockTimer = setInterval(()=>{
     seconds--;
-    if(seconds >= 0) cdEl.textContent = formatTime(seconds);
-    if(seconds < 0){
-      clearInterval(lockTimer);
-      endLock();
-    }
-  }, 1000);
+    if(seconds >= 0) cd.textContent = formatTime(seconds);
+    if(seconds < 0){ clearInterval(lockTimer); endLock(); }
+  },1000);
 }
+function endLock(){ locked=false; overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); document.body.classList.remove('lock'); if(lockTimer){ clearInterval(lockTimer); lockTimer=null; } flashSide('Lock ended','Overlay closed'); }
 
-function endLock(){
-  locked = false;
-  overlay.style.display = 'none';
-  overlay.setAttribute('aria-hidden','true');
-  document.body.classList.remove('lock');
-  if(lockTimer) { clearInterval(lockTimer); lockTimer = null; }
-}
+// format helpers
+function pad(n){ return String(n).padStart(2,'0'); }
+function formatTime(sec){ const m=Math.floor(sec/60); const s=sec%60; return `${pad(m)}:${pad(s)}`; }
 
-// time helpers
-function pad(n){ return n.toString().padStart(2,'0'); }
-function formatTime(sec){
-  const m = Math.floor(sec/60);
-  const s = sec%60;
-  return `${pad(m)}:${pad(s)}`;
-}
-
-// SCHEDULER & API fetch (Aladhan)
-let todaysTimings = null;
-
+// SCHEDULER & Aladhan API
 function loadTimes(lat, lon){
   fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`)
-    .then(r => r.json())
-    .then(d => {
-      if(!d || !d.data) throw new Error("No timing data");
+    .then(r=>r.json())
+    .then(d=>{
+      if(!d || !d.data) throw new Error('No data');
       const t = d.data.timings;
       const dateInfo = d.data.date;
-      // Fill UI
-      ['Fajr','Dhuhr','Asr','Maghrib','Isha'].forEach(p => {
-        if(timesEls[p]) timesEls[p].textContent = t[p];
-      });
+      ['Fajr','Dhuhr','Asr','Maghrib','Isha'].forEach(p=>{ if(timesEls[p]) timesEls[p].textContent = t[p]; });
       todaysTimings = t;
-
-      // Hijri Display: prefer API hijri, fallback to Intl
-      if(dateInfo && dateInfo.hijri){
-        hijriDateEl.textContent = `${dateInfo.hijri.day} ${dateInfo.hijri.month.en} ${dateInfo.hijri.year} AH`;
-      }else{
-        try{
-          const dt = new Date();
-          const f = new Intl.DateTimeFormat('en-u-ca-islamic', {day:'numeric', month:'long', year:'numeric'});
-          hijriDateEl.textContent = f.format(dt);
-        }catch(e){
-          hijriDateEl.textContent = '';
-        }
-      }
-
-      // Gregorian date display
-      const now = new Date();
-      const gFmt = now.toLocaleString(undefined, {weekday:'long', month:'long', day:'numeric'});
-      gregDateEl.textContent = gFmt;
-
+      if(dateInfo && dateInfo.hijri) hijriDateEl.textContent = `${dateInfo.hijri.day} ${dateInfo.hijri.month.en} ${dateInfo.hijri.year} AH`;
+      else { try{ hijriDateEl.textContent = new Intl.DateTimeFormat('en-u-ca-islamic',{day:'numeric',month:'long',year:'numeric'}).format(new Date()); }catch(e){ hijriDateEl.textContent=''; } }
+      const now = new Date(); gregDateEl.textContent = now.toLocaleString(undefined, {weekday:'long', month:'long', day:'numeric'});
       schedule(t);
       updateNextPrayer();
-      // refresh next prayer countdown every 15 seconds
-      setInterval(updateNextPrayer, 15_000);
+      setInterval(updateNextPrayer, 15000);
     })
     .catch(err=>{
-      console.warn("Failed to fetch timings, using defaults", err);
-      // fallback approximate defaults
+      console.warn('Timings error',err);
       const fallback = {Fajr:"05:00",Dhuhr:"12:30",Asr:"15:30",Maghrib:"18:00",Isha:"19:30"};
-      ['Fajr','Dhuhr','Asr','Maghrib','Isha'].forEach(p => timesEls[p].textContent = fallback[p]);
+      Object.keys(fallback).forEach(k=> timesEls[k].textContent = fallback[k]);
       todaysTimings = fallback;
       schedule(fallback);
     });
 }
 
-// schedule side popups and lock overlay for each prayer
+// schedule side reminders and lock
 function schedule(times){
-  // Clear previously scheduled (naive: no tracking). For repeated page visits, it's acceptable.
   const prayerNames = ["Fajr","Dhuhr","Asr","Maghrib","Isha"];
   const now = new Date();
-
-  prayerNames.forEach(name => {
+  prayerNames.forEach(name=>{
     const val = times[name];
     if(!val) return;
-    const [hStr, mStr] = val.split(':');
-    let h = parseInt(hStr,10), m = parseInt(mStr,10);
-    if(isNaN(h) || isNaN(m)) return;
-
+    const [hStr,mStr] = val.split(':'); let h=parseInt(hStr,10), m=parseInt(mStr,10);
+    if(isNaN(h)||isNaN(m)) return;
     const pray = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0);
-
-    // If prayer already passed for today, skip scheduling (timings may change daily)
+    // if prayer already passed today, skip
     if(pray <= now) return;
-
-    // side notification 5 minutes before
     const sideTime = new Date(pray.getTime() - 5*60*1000);
     const sDelay = sideTime - now;
     const bDelay = pray - now;
 
     if(sDelay > 0) setTimeout(()=> {
-      const msg = `${name} in 5 minutes`;
-      flashSide(msg, "Get ready for Salah");
-      if(notificationsAllowed) new Notification("ImanPlay", {body: `${name} in 5 minutes`, icon:"https://cdn-icons-png.flaticon.com/512/616/616408.png"});
+      if(doNotDisturbUntil > Date.now()) return;
+      const title = `${name} in 5 minutes`;
+      sendNotification(title, { body: 'Get ready for Salah', icon: mosqueIcon });
+      flashSide(title, 'Get ready for Salah');
       playSound();
     }, sDelay);
 
-    // At prayer time: full-block overlay + notification
     if(bDelay > 0) setTimeout(()=> {
-      const msg = `${name} time`;
-      if(notificationsAllowed) new Notification("ImanPlay — Prayer time", {body: `${name} time — Focus now`, icon:"https://cdn-icons-png.flaticon.com/512/616/616408.png"});
-      flashSide(msg, `${name} has started`);
-      startLock(7*60); // 7 minutes block
+      if(doNotDisturbUntil > Date.now()) return;
+      const title = `${name} time`;
+      sendNotification('ImanPlay — Prayer time', { body: `${name} has started — Focus now`, icon: mosqueIcon });
+      flashSide(title, `${name} has started`);
+      const mins = parseInt(lockRange.value || '7',10) || 7;
+      startLock(mins);
     }, bDelay);
   });
 }
@@ -560,86 +528,48 @@ function updateNextPrayer(){
   if(!todaysTimings) return;
   const now = new Date();
   const prayerNames = ["Fajr","Dhuhr","Asr","Maghrib","Isha"];
-  let next = null;
-  let nextTime = null;
+  let next=null, nextTime=null;
   for(const name of prayerNames){
     const [hStr,mStr] = (todaysTimings[name]||'00:00').split(':');
     const pray = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(hStr,10), parseInt(mStr,10), 0, 0);
-    if(pray > now){
-      next = name;
-      nextTime = pray;
-      break;
-    }
+    if(pray > now){ next=name; nextTime=pray; break; }
   }
   if(!next){
-    // no more prayers today — set to Fajr tomorrow (approx)
     next = 'Fajr';
     const [hStr,mStr] = (todaysTimings['Fajr']||'05:00').split(':');
     nextTime = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, parseInt(hStr,10), parseInt(mStr,10), 0, 0);
   }
-  nextPrayerEl.textContent = `${next} (${formatClock(nextTime)})`;
+  nextPrayerEl.textContent = `${next} (${pad(nextTime.getHours())}:${pad(nextTime.getMinutes())})`;
   const diff = Math.max(0, Math.floor((nextTime - now) / 1000));
   timeUntilEl.textContent = humanRemaining(diff);
 }
+function humanRemaining(seconds){ const h=Math.floor(seconds/3600), m=Math.floor((seconds%3600)/60), s=seconds%60; if(h>0) return `${h}h ${m}m`; if(m>0) return `${m}m ${s}s`; return `${s}s`; }
 
-function formatClock(d){
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-function humanRemaining(seconds){
-  const h = Math.floor(seconds/3600);
-  const m = Math.floor((seconds%3600)/60);
-  const s = seconds%60;
-  if(h>0) return `${h}h ${m}m`;
-  if(m>0) return `${m}m ${s}s`;
-  return `${s}s`;
-}
-
-// attempt geolocation then load times
+// Attempt geolocation then load times
 if(navigator.geolocation){
-  navigator.geolocation.getCurrentPosition(pos=>{
-    loadTimes(pos.coords.latitude, pos.coords.longitude);
-  }, err=>{
-    // fallback to a default location (Toronto)
-    loadTimes(43.4675, -79.6877);
-  }, {timeout:7000});
-} else {
+  navigator.geolocation.getCurrentPosition(pos=> loadTimes(pos.coords.latitude, pos.coords.longitude),
+  err=> loadTimes(43.4675, -79.6877), {timeout:7000});
+}else{
   loadTimes(43.4675, -79.6877);
 }
 
-// prevent closing while locked (optional)
-window.addEventListener("beforeunload", (e) => {
-  if(locked){
-    e.preventDefault();
-    e.returnValue = "";
-  }
-});
+// prevent unload while locked
+window.addEventListener('beforeunload', (e)=>{ if(locked){ e.preventDefault(); e.returnValue=''; } });
 
-// small helper to format date on load
-(function showDatesNow(){
-  const now = new Date();
-  gregDateEl.textContent = now.toLocaleString(undefined, {weekday:'short', month:'short', day:'numeric'});
-})();
+// set sound src from saved and attach play-ready behavior
+soundEl.src = SOUND_MAP[soundSelect.value] || SOUND_MAP.digital;
+soundEl.muted = muted;
 
-// play sound after test or enable
-function playTestSound(){
-  playSound();
-}
+// set initial dates
+(function showDatesNow(){ const now=new Date(); gregDateEl.textContent = now.toLocaleString(undefined, {weekday:'short', month:'short', day:'numeric'}); })();
 
-// wire test button to make audible play allowed
-testBtn.addEventListener('click', playTestSound);
+// Set lockRange label initial
+lockLabel.textContent = `${lockRange.value}m`;
 
-// small accessibility: pressing Escape does not close lock automatically; require explicit confirmation
-document.addEventListener('keydown', (e)=>{
-  if(e.key==='Escape' && locked){
-    // do nothing to keep lock; could show hint
-    flashSide("Locked", "Use 'End lock early' button to end overlay");
-    e.preventDefault();
-  }
-});
+// small util: show notification using SW if installed (already in sendNotification)
 
-// initialize: show hadith/dua loaded
-showHadithAndDua();
+// Accessibility: keep Escape from closing locked overlay unexpectedly
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && locked){ flashSide('Locked', "Use 'End lock early' to unlock"); e.preventDefault(); } });
 
 </script>
 
